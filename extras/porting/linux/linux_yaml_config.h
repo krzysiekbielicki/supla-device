@@ -217,6 +217,10 @@ class LinuxYamlConfig : public KeyValue {
   bool addGeneralPurposeMeterParsed(const YAML::Node& ch,
                                     int channelNumber,
                                     Supla::Parser::Parser* parser);
+  bool addRollerShutterParsed(const YAML::Node& ch,
+                              int channelNumber,
+                              Supla::Parser::Parser* parser,
+                              Payload::Payload* payload);
 
   std::string file;
   YAML::Node config;

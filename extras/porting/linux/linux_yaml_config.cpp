@@ -24,6 +24,7 @@
 #include <supla/control/control_payload.h>
 #include <supla/control/custom_relay.h>
 #include <supla/control/virtual_relay.h>
+#include <supla/control/roller_shutter_parsed.h>
 #include <supla/log_wrapper.h>
 #include <supla/network/ip_address.h>
 #include <supla/output/cmd.h>
@@ -657,6 +658,16 @@ bool Supla::LinuxYamlConfig::parseChannel(const YAML::Node& ch,
       return addThermHygroMeterParsed(ch, channelNumber, parser);
     } else if (type == "ActionTriggerParsed") {
       return addActionTriggerParsed(ch, channelNumber);
+    } else if (type == "RollerShutterParsed") {
+      if (!parser) {
+        SUPLA_LOG_ERROR("Channel[%d] config: missing parser", channelNumber);
+        return false;
+      }
+      if (!payload) {
+        SUPLA_LOG_ERROR("Channel[%d] config: missing parser", channelNumber);
+        return false;
+      }
+      return addRollerShutterParsed(ch, channelNumber, parser, payload);
     } else {
       SUPLA_LOG_ERROR("Channel[%d] config: unknown type \"%s\"",
                       channelNumber,
@@ -2030,6 +2041,38 @@ bool Supla::LinuxYamlConfig::addDistanceParsed(const YAML::Node& ch,
   }
 
   return addCommonParametersParsed(ch, distance, &paramCount, parser);
+}
+
+bool Supla::LinuxYamlConfig::addRollerShutterParsed(const YAML::Node& ch,
+                                            int channelNumber,
+                                            Parser::Parser* parser,
+                                            Payload::Payload* payload) {
+  SUPLA_LOG_INFO("Channel[%d] config: adding RollerShutterParsed", channelNumber);
+  auto cr = new Supla::Control::RollerShutterParsed(parser, payload);
+  if (ch["turn_on_payload"]) {
+    paramCount++;
+    auto turnOnPayload = ch["turn_on_payload"].as<std::string>();
+    cr->setSetOnValue(turnOnPayload);
+  }
+  if (ch["turn_off_payload"]) {
+    paramCount++;
+    auto turnOffPayload = ch["turn_off_payload"].as<std::string>();
+    cr->setSetOffValue(turnOffPayload);
+  }
+
+  if (!addStateParser(ch, cr, parser, false)) {
+    return false;
+  }
+
+  if (!addStatePayload(ch, cr, payload, false)) {
+    return false;
+  }
+
+  if (!addActionTriggerActions(ch, cr, false)) {
+    return false;
+  }
+
+  return addCommonParametersParsed(ch, cr, &paramCount, parser);
 }
 
 bool Supla::LinuxYamlConfig::addCommonParametersParsed(
