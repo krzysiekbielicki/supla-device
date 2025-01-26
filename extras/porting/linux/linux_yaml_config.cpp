@@ -67,6 +67,7 @@
 
 #include "supla/control/action_trigger.h"
 #include "supla/control/hvac_parsed.h"
+#include "supla/control/roller_shutter_parsed.h"
 #include "supla/sensor/sensor_parsed.h"
 #include "supla/sensor/therm_hygro_meter_parsed.h"
 #include "supla/storage/key_value.h"
@@ -699,6 +700,8 @@ bool Supla::LinuxYamlConfig::parseChannel(const YAML::Node& ch,
       return addThermHygroMeterParsed(ch, channelNumber, parser);
     } else if (type == "ActionTriggerParsed") {
       return addActionTriggerParsed(ch, channelNumber);
+    } else if (type == "RollerShutterParsed") {
+      return addRollerShutterParsed(ch, channelNumber, parser, payload);
     } else {
       SUPLA_LOG_ERROR("Channel[%d] config: unknown type \"%s\"",
                       channelNumber,
@@ -2072,6 +2075,16 @@ bool Supla::LinuxYamlConfig::addDistanceParsed(const YAML::Node& ch,
   }
 
   return addCommonParametersParsed(ch, distance, &paramCount, parser);
+}
+
+bool Supla::LinuxYamlConfig::addRollerShutterParsed(
+  const YAML::Node& ch,
+  int channelNumber,
+  Parser::Parser* parser,
+  Payload::Payload* payload
+) {
+  auto shutter = new Supla::Control::RollerShutterParsed(parser, payload);
+  return addCommonParametersParsed(ch, shutter, &paramCount, parser);
 }
 
 bool Supla::LinuxYamlConfig::addCommonParametersParsed(

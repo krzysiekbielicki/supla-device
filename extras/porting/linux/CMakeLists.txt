@@ -83,6 +83,7 @@ set(SUPLA_DEVICE_LINUX_SRCS
   supla/control/hvac_parsed.cpp
   supla/control/custom_relay.cpp
   supla/control/control_payload.cpp
+  supla/control/roller_shutter_parsed.cpp
 
   ../../../src/supla/pv/fronius.cpp
   ../../../src/supla/pv/afore.cpp

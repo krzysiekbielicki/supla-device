@@ -193,6 +193,10 @@ class LinuxYamlConfig : public KeyValue {
   bool addDistanceParsed(const YAML::Node& ch,
                          int channelNumber,
                          Supla::Parser::Parser* parser);
+  bool addRollerShutterParsed(const YAML::Node& ch,
+                      int channelNumber,
+                      Parser::Parser* parser,
+                      Payload::Payload* payload);
   bool addCommonParametersParsed(const YAML::Node& ch,
                                  Supla::Sensor::SensorParsedBase* sensor,
                                  int* paramCount,
