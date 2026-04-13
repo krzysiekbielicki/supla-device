@@ -1,0 +1,44 @@
+name: Build Linux Port (AMD64)
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'src/**'
+      - 'extras/porting/linux/**'
+      - 'extras/examples/linux/**'
+      - '.github/workflows/build-linux.yml'
+  pull_request:
+    branches: [main]
+    paths:
+      - 'src/**'
+      - 'extras/porting/linux/**'
+      - 'extras/examples/linux/**'
+      - '.github/workflows/build-linux.yml'
+
+jobs:
+  build:
+    name: Build supla-device-linux (amd64)
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Install dependencies
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y cmake g++ libssl-dev libyaml-cpp-dev
+
+      - name: Configure CMake
+        run: cmake -S extras/examples/linux -B extras/examples/linux/build
+
+      - name: Build
+        run: cmake --build extras/examples/linux/build --parallel $(nproc)
+
+      - name: Upload binary
+        uses: actions/upload-artifact@v4
+        with:
+          name: supla-device-linux-amd64
+          path: extras/examples/linux/build/supla-device-linux
+          if-no-files-found: error
