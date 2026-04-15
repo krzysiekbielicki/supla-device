@@ -34,11 +34,13 @@ jobs:
         run: cmake -S extras/examples/linux -B extras/examples/linux/build
 
       - name: Build
-        run: cmake --build extras/examples/linux/build --parallel $(nproc)
+        run: |
+          cmake --build extras/examples/linux/build --parallel $(nproc)
+          mv extras/examples/linux/build/supla-device-linux extras/examples/linux/build/supla-device-linux-amd64
 
       - name: Upload binary
         uses: actions/upload-artifact@v4
         with:
           name: supla-device-linux-amd64
-          path: extras/examples/linux/build/supla-device-linux
+          path: extras/examples/linux/build/supla-device-linux-amd64
           if-no-files-found: error
